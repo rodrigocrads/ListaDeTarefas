@@ -2,10 +2,12 @@ package com.example.listatarefas.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.listatarefas.R;
 import com.example.listatarefas.model.Tarefa;
 
 import java.util.List;
@@ -25,7 +27,8 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
+        Tarefa tarefa = tarefas.get(position);
+        holder.tarefa.setText(tarefa.getDescricao());
     }
 
     @Override
@@ -34,8 +37,11 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView tarefa;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            tarefa = itemView.findViewById(R.id.listaTarefas);
         }
     }
 }
