@@ -1,5 +1,6 @@
 package com.example.listatarefas;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import com.example.listatarefas.helper.RecyclerItemClickListener;
 import com.example.listatarefas.model.Tarefa;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -19,12 +21,12 @@ import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private List<Tarefa> listaTarefas = new ArrayList<>();
 
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AdicionarTarefaActivity.class);
-
                 startActivity( intent );
             }
         });
@@ -81,10 +82,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View view, int position) {
                                 Tarefa tarefa = listaTarefas.get(position);
-
                                 Intent intent = new Intent(MainActivity.this, AdicionarTarefaActivity.class);
                                 intent.putExtra("tarefaSelecionada", tarefa);
-
                                 startActivity(intent);
                             }
 
@@ -92,7 +91,30 @@ public class MainActivity extends AppCompatActivity {
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
 
                             @Override
-                            public void onLongItemClick(View view, int position) {}
+                            public void onLongItemClick(View view, int position) {
+                                final Tarefa tarefa = listaTarefas.get(position);
+                                AlertDialog.Builder dialog = new AlertDialog.Builder(
+                                  MainActivity.this
+                                );
+
+                                dialog.setTitle("Confirmar exclusão");
+                                dialog.setMessage(String.format("Deseja mesmo excluir a terefa: %s?", tarefa.getDescricao()));
+
+                                dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        TarefaDAO tarefaDAO = new TarefaDAO(getApplicationContext());
+                                        if(tarefaDAO.deletar(tarefa)) {
+                                            Toast.makeText(getApplicationContext(), "Excluída com sucesso.", Toast.LENGTH_SHORT).show();
+                                            carregarListaTarefas();
+                                        }
+                                    }
+                                });
+                                dialog.setNegativeButton("Não", null);
+
+                                dialog.create();
+                                dialog.show();
+                            }
                         }
                 )
         );
