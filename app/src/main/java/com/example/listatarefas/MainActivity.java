@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -27,7 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private List<Tarefa> tarefas = new ArrayList<>();
+    private List<Tarefa> listaTarefas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,28 +35,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        recyclerView = findViewById(R.id.recyclerViewTarefas);
-
-        recyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(
-                        getApplicationContext(),
-                        recyclerView,
-                        new RecyclerItemClickListener.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                Log.i("clique", "onItemClick");
-                            }
-
-                            @Override
-                            public void onLongItemClick(View view, int position) {
-                                Log.i("clique", "onLongClick");
-                            }
-
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
-                        }
-                )
-        );
+        addListenerRecyclerView();
 
         FloatingActionButton fab = findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
     public void carregarListaTarefas()
     {
         TarefaDAO tarefaDAO = new TarefaDAO(getApplicationContext());
-        tarefas = tarefaDAO.list();
+        listaTarefas = tarefaDAO.list();
 
         // configurar adapter
-        TarefaAdapter adapter = new TarefaAdapter(tarefas);
+        TarefaAdapter adapter = new TarefaAdapter(listaTarefas);
 
         // configurar Recyclerview
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager( getApplicationContext() );
@@ -90,5 +68,33 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize( true );
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayout.VERTICAL));
         recyclerView.setAdapter(adapter);
+    }
+
+    private void addListenerRecyclerView() {
+        recyclerView = findViewById(R.id.recyclerViewTarefas);
+
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(
+                        getApplicationContext(),
+                        recyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                Tarefa tarefa = listaTarefas.get(position);
+
+                                Intent intent = new Intent(MainActivity.this, AdicionarTarefaActivity.class);
+                                intent.putExtra("tarefaSelecionada", tarefa);
+
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
+
+                            @Override
+                            public void onLongItemClick(View view, int position) {}
+                        }
+                )
+        );
     }
 }
