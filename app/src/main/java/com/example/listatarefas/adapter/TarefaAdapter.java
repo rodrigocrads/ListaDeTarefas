@@ -1,10 +1,10 @@
 package com.example.listatarefas.adapter;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.listatarefas.R;
@@ -16,32 +16,32 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.MyViewHold
     private List<Tarefa> tarefas;
 
     public TarefaAdapter(List<Tarefa> lista) {
-        tarefas = lista;
-    }
-
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        this.tarefas = lista;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View listItem = LayoutInflater.from( parent.getContext() )
+                            .inflate(R.layout.lista_tarefa_adapter, parent, false);
+        return new MyViewHolder(listItem);
+    }
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
         Tarefa tarefa = tarefas.get(position);
-        holder.tarefa.setText(tarefa.getDescricao());
+        holder.tarefa.setText( tarefa.getDescricao() );
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.tarefas.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tarefa;
-
-        public MyViewHolder(@NonNull View itemView) {
+        public TextView tarefa;
+        public MyViewHolder(View itemView) {
             super(itemView);
-            tarefa = itemView.findViewById(R.id.listaTarefas);
+            tarefa = (TextView) itemView.findViewById(R.id.textTarefa);
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.listatarefas.adapter.TarefaAdapter;
+import com.example.listatarefas.dao.TarefaDAO;
 import com.example.listatarefas.helper.RecyclerItemClickListener;
 import com.example.listatarefas.model.Tarefa;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,11 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        recyclerView = findViewById(R.id.listaTarefas);
+        recyclerView = findViewById(R.id.recyclerViewTarefas);
 
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(
@@ -72,16 +70,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        carregarListaTarefas();
+        super.onStart();
+    }
+
     public void carregarListaTarefas()
     {
-        // lista tarefas
-        Tarefa t1 = new Tarefa();
-        t1.setDescricao("Ir ao Mercado");
-        tarefas.add(t1);
-
-        Tarefa t2 = new Tarefa();
-        t1.setDescricao("lavar carro");
-        tarefas.add(t2);
+        TarefaDAO tarefaDAO = new TarefaDAO(getApplicationContext());
+        tarefas = tarefaDAO.list();
 
         // configurar adapter
         TarefaAdapter adapter = new TarefaAdapter(tarefas);
